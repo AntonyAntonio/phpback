@@ -1,4 +1,4 @@
-<div class="contentdiv pull-left" style="padding-left:40px;padding-right:50px;width:70%">	
+<div class="contentdiv pull-left" style="padding-left:40px;padding-right:50px;width:70%">
 	<small><ol class="breadcrumb">
 			  <li><a href="<?php echo base_url();?>">Feedback</a></li>
 			  <li><?php echo $lang['label_profiles']; ?></li>
@@ -43,7 +43,7 @@
 			</tbody>
 		</table>
 		<div id="changepasswordtable" style="display:none">
-			<form role="form" method="post" action="<?= base_url() . 'action/changepassword'?>">
+			<form name="changepassform"role="form" method="post" action="<?= base_url() . 'action/changepassword'?>">
 	            <div class="form-group">
 	              <label><?= $lang['form_password_old']; ?></label>
 	              <input type="password" class="form-control" name="old" style="width:150px">

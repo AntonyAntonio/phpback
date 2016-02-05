@@ -126,4 +126,38 @@ class AdminPanelTest extends TestCase {
         $passdisbann= RedBean::load('users',3);
         $this->assertEquals($passdisbann->banned,'0');
     }
+    public function testApproveIdea() {
+        Scripts::ApproveIdea();
+        $idea= RedBean::load('ideas',1);
+        $this->assertEquals($idea->status,'considered');
+    }
+    public function testChangeStatusIdea(){
+        Scripts::LoginAdmin();
+        $this->url('/home/idea/1/Relativity-Theory');
+        $this->select($this->byName('Changestatusbutton'))->selectOptionByValue('Planned');
+        $statusidea= RedBean::load('ideas',1);
+        $this->assertEquals($idea->status,'Planned');
+        $this->select($this->byName('Changestatusbutton'))->selectOptionByValue('Started');
+        $this->assertEquals($idea->status,'Started');
+        $this->select($this->byName('Changestatusbutton'))->selectOptionByValue('Completed');
+        $this->assertEquals($idea->status,'Completed');
+    }
+    public function testDeclinedIdea(){
+        Scripts::ApproveIdea();
+        $this->url('/home/idea/1/Relativity-Theory');
+        $this->select($this->byName('Changestatusbutton'))->selectOptionByValue('Declined');
+        $declinedidea= RedBean::load('ideas',2);
+        $this->assertEquals($declinedidea->status,'Declined');
+        $this->byName('deleteidea')->click();
+        $this->assertNotContains('Relativity Theory',$this->byTag('body')->text());//la unica manera que podia demostrar que se habia echo lo queria
+    }
+    public function testDeleteFlagComment(){
+        Scripts::LoginUser();
+        Scripts::CreateComment();
+        Scripts::LogoutUser();
+        Scripts::LoginAdmin();
+        $this->url('/admin/ideas');
+        $this->byName('Delete votes')->click();
+        $this->assertNotContains('Flagged ',$this->byTag('body')->text());
+    }
 }

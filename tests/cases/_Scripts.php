@@ -43,6 +43,11 @@ class Scripts {
         ));
         $test->byName('login-form')->submit();
     }
+    public static function LogoutUser(){
+        $test = self::$instance;
+        $test->url('/home/login');
+        $test->byLinkText('Log out')->click();
+    }
     public static function CreateCategory($name = 'Amsterdam') {
         $test = self::$instance;
         self::LoginAdmin();
@@ -54,5 +59,37 @@ class Scripts {
             'description' => 'Value Category Description'
         ));
         $test->byName('add-category')->click();
+    }
+    public static function CreateIdea($title= 'Relativity Theory', $description='The  relativity is strange'){
+        $test = self::$instance;
+        $test->url('/home');
+        $test->byLinkText('Post a new idea')->click();
+        $test->fillFields(array(
+          'description' => $description,
+          'title' => $title
+        ));
+        $test->select($test->byName('category'))->selectOptionByValue('2');
+        $test->byName('post-idea-form')->submit();
+    }
+    public static function ApproveIdea(){
+        $test = self::$instance;
+        self::LoginUser();
+        self::CreateIdea();
+        self::LogoutUser();
+        self::LoginAdmin();
+        $test->url('/home/idea/1/Relativity-Theory');
+        $test->byLinkText('Approve Idea')->click();
+    }
+    public static function CreateComment($url='home/idea/3/Relativity-Theory'){
+        $test = self::$instance;
+        $test->url($url);
+        $test->fillFields(array(
+                'content' => 'the theory of relativity is fake.'
+        ));
+        $test->byName('commentbutton')->click();
+    }
+    public static function FlagComment($url='home/idea/3/Relativity-Theory'){
+        $test->url($url);
+        $test->byLinkText('flag comment')->click();
     }
 }

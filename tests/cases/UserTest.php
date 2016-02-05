@@ -25,56 +25,45 @@ class UserTest extends TestCase {
     }
 
     public function testCreateIdea() {
-        Scripts::LoginUser('newemail2@phpback.org','Gates123');
-        $this->byLinkText('Post a new idea')->click();
-        $this->fillFields(array(
-          'description' => 'The theory of relativity is strange',
-          'title' => 'Relativity Theory'
-        ));
-        $this->select($this->byName('category'))->selectOptionByValue('2');
-        $this->byName('post-idea-form')->submit();
-        $newidea = RedBean::load('ideas',1);
+        Scripts::LoginUser();
+        Scripts::CreateIdea();
+        $newidea = RedBean::load('ideas',3);
         $this->assertEquals($newidea->title,'Relativity Theory');
-        $this->assertEquals($newidea->authorid,'4');
+        $this->assertEquals($newidea->authorid,'2');
         $this->assertEquals($newidea->votes,'0');
-        $this->assertEquals($newidea->content,'The theory of relativity is strange');
+        $this->assertEquals($newidea->content,'The  relativity is strange');
         $this->assertEquals($newidea->comments,'0');
         $this->assertEquals($newidea->status,'new');
         $this->assertEquals($newidea->categoryid,'2');
 
     }
 
-    public function testCreateComentary() {
+    public function testCreateComment() {
         Scripts::LoginUser('newemail2@phpback.org','Gates123');
-        $this->url('home/idea/1/Relativity-Theory');
-        $this->fillFields(array(
-                'content' => 'the theory of relativity is fake.'
-        ));
-        $this->byName('commentbutton')->click();
-        $newcomment = RedBean::load('comments',1);
+        Scripts::CreateComentary();
+        $newcomment = RedBean::load('comments',2);
         $this->assertEquals($newcomment->content,'the theory of relativity is fake.');
-        $this->assertEquals($newcomment->ideaid,'1');
+        $this->assertEquals($newcomment->ideaid,'3');
         $this->assertEquals($newcomment->userid ,'4');
     }
     public function testFlagComment() {
         Scripts::LoginUser('newemail2@phpback.org','Gates123');
-        $this->url('home/idea/1/Relativity-Theory');
-        $this->byLinkText('flag comment')->click();
+        Scripts::FlagComment();
         $newflag = RedBean::load('flags',1);
         $this->assertEquals($newflag->toflagid,'1');
         $this->assertEquals($newflag->userid,'4');
     }
     public function testVoteIdea() {
         Scripts::LoginUser('newemail2@phpback.org','Gates123');
-        $this->url('home/idea/1/Relativity-Theory');
+        $this->url('home/idea/3/Relativity-Theory');
         $this->byName('Vote')->click();
         $this->byLinkText('2 Votes')->click();
         $newvote = RedBean::load('votes',1);
-        $voteidea = RedBean::load('ideas',1);
+        $voteidea = RedBean::load('ideas',3);
         $user = RedBean::load('users',4);
         $this->assertEquals($newvote->number,'2');
         $this->assertEquals($newvote->userid,'4');
-        $this->assertEquals($newvote->ideaid,'1');
+        $this->assertEquals($newvote->ideaid,'3');
         $this->assertEquals($user->votes,'48');//error
         $this->assertEquals($voteidea->votes,'2');
     }
@@ -82,7 +71,7 @@ class UserTest extends TestCase {
         Scripts::LoginUser('newemail2@phpback.org','Gates123');
         $this->url('home/profile/4');
         $this->byLinkText('Delete votes')->click();
-        $voteidea = RedBean::load('ideas',1);
+        $voteidea = RedBean::load('ideas',3);
         $this->assertEquals($voteidea->votes,'0');
     }
     public function testChangePass() {
@@ -94,7 +83,7 @@ class UserTest extends TestCase {
             'new' => 'Microsoft123',
             'rnew' => 'Microsoft123'
         ));
-        $this->byLinkText('Change Password')->click();
+        $this->byName('changepassform')->submit();
         $this->byLinkText('Log out')->click();
         Scripts::LoginUser('newemail2@phpback.org','Microsoft123');
         $this->assertEquals($this->url(),'http://localhost:8080/home/');
